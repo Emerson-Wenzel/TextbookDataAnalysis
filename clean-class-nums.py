@@ -3,7 +3,7 @@
 clean-class-nums.py
 Written by: Mohsin Rizvi
 
-Asks for the name of a .csv file (including .csv) and parses its data
+Takes the name of a .csv file (including .csv) and parses its data
 contained in the "Class Name" column. It saves the parsed data in a csv file
 called "cleaned_[originalfile]", where [originalfile] is the name of the
 original file. It puts the department name in the 2nd column, then the
@@ -14,9 +14,11 @@ This is a pretty rough script.
 """
 
 import pandas as pd
+import sys
 
-file = input('What file would you like to open?\n')
-df = pd.read_csv(file)
+if len(sys.argv) < 2:
+    print("Usage: python clean-class-nums.py [csv_to_clean]")
+df = pd.read_csv(sys.argv[1])
 
 dpt_name = []
 nums = []
@@ -43,4 +45,4 @@ for i in df['Class Name']:
 df = pd.DataFrame(dpt_name)
 for i in range(len(class_nums)):
     df[str(i)] = class_nums[i]
-df.to_csv('cleaned_' + file)
+df.to_csv('cleaned_' + sys.argv[1])
