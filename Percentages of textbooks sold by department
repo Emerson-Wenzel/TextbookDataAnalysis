@@ -1,0 +1,107 @@
+#bar graph: total textbooks and sold textbooks by department
+
+
+#Import packages. 
+import pandas as pd
+import numpy as np
+import plotly
+
+plotly.tools.set_credentials_file(username='philmillr', api_key='dnn9gr0LJkzFmfsplnYc')
+
+import plotly.plotly as py
+import plotly.graph_objs as go
+
+#----------------------------------------------------------------
+
+#Read csv into dataframe
+df_sold = pd.read_csv("MASTER_SOLD.csv")
+
+df_selling = pd.read_csv("MASTER_SELLING.csv")
+
+#Create our x values, the departments w/o duplicates
+uniqueNames = list(set(df_selling['Department']))
+zeroArray = np.zeros([len(uniqueNames), 1])[:,0]
+
+#Create the new dataframe which we will use to plot
+Occurence_df_sold = pd.DataFrame(
+        {'Department':uniqueNames,
+         'Occurence':zeroArray
+                })
+    
+#Find how often each department is listed
+for i, dept in enumerate(df_sold['Department']):
+    for j, unique_dept in enumerate(Occurence_df_sold['Department']):
+        if dept == unique_dept:
+            Occurence_df_sold['Occurence'][j] += 1
+            
+
+#Sort the values via the number of occurences descending
+sorted_Occurence_df_sold = Occurence_df_sold.sort_values(by=['Occurence'], ascending=False)
+
+#-----------------------------------------------------------------
+
+#Create our x values, the departments w/o duplicates
+uniqueNames = list(set(df_selling['Department']))
+zeroArray = np.zeros([len(uniqueNames), 1])[:,0]
+
+#Create the new dataframe which we will use to plot
+Occurence_df_total = pd.DataFrame(
+        {'Department':uniqueNames,
+         'Occurence':zeroArray
+                })
+
+for i, dept in enumerate(df_sold['Department']):
+    for j, unique_dept in enumerate(Occurence_df_total['Department']):
+        if dept == unique_dept:
+            Occurence_df_total['Occurence'][j] += 1
+
+
+for i, dept in enumerate(df_selling['Department']):
+    for j, unique_dept in enumerate(Occurence_df_total['Department']):
+        if dept == unique_dept:
+            Occurence_df_total['Occurence'][j] += 1
+
+#Sort the values via the number of occurences descending
+sorted_Occurence_df_total = Occurence_df_total.sort_values(by=['Occurence'], ascending=False)
+
+
+#-----------------------------------------------------------------
+
+percentage_df_total = pd.DataFrame(
+        {'Department':uniqueNames,
+         'Occurence':zeroArray
+                })
+
+
+
+for i, dept in enumerate(sorted_Occurence_df_sold['Department']):
+    for j, unique_dept in enumerate(sorted_Occurence_df_total['Department']):
+        if dept == unique_dept:
+            print(sorted_Occurence_df_sold['Occurence'][i])
+            print(sorted_Occurence_df_total['Occurence'][j])
+            percentage_df_total['Occurence'][j] = sorted_Occurence_df_sold['Occurence'][i] / \
+            sorted_Occurence_df_total['Occurence'][j] * 100
+
+
+#-----------------------------------------------------------------
+#print graph
+
+trace1 = go.Bar(
+    x = percentage_df_total['Department'],
+    y = percentage_df_total['Occurence'],
+    name = 'Total Textbooks Listed'
+)
+
+
+data = [trace1]
+layout = go.Layout(
+    barmode = 'group'
+)
+
+fig = go.Figure(data=data, layout=layout)
+
+#Put bar graph onto plotly
+py.plot(data, filename='Popularity of Department books sold Percentages')
+
+
+
