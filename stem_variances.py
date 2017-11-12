@@ -57,3 +57,4 @@ df = get_book_occurances('MASTER_SOLD.csv',
                          class_col_in_csv = 'Class1',
                          col_name = 'Books')
 df = df.sort_values(by = 'Books', ascending = False)
+df.to_csv('cleaned_booknums.csv')
